@@ -1,0 +1,16 @@
+﻿<Project>
+   <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>6b687ddd-ee45-4b33-897d-2c8a2350b351</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup
+  Condition="'$(MSBuildProjectExtension)' != '.esproj'">
+    <PackageReference Include="SonarAnalyzer.CSharp">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+</Project>

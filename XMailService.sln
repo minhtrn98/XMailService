@@ -1,0 +1,50 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35818.85
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XMailService.Domain", "XMailService.Domain\XMailService.Domain.csproj", "{EE67402B-DF59-4AE3-814B-DDF22AE2AAD2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		Directory.Build.props = Directory.Build.props
+		Directory.Packages.props = Directory.Packages.props
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XMailService.Application", "XMailService.Application\XMailService.Application.csproj", "{02D0BF35-260C-4C23-81F4-C8AA1F81D430}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XMailService.Shared", "XMailService.Shared\XMailService.Shared.csproj", "{1DC67458-E153-4283-A971-4B7E0369B65A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XMailService.Infrastructure", "XMailService.Infrastructure\XMailService.Infrastructure.csproj", "{F04B1029-9D84-4051-B431-C57FFEDCAE6F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EE67402B-DF59-4AE3-814B-DDF22AE2AAD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE67402B-DF59-4AE3-814B-DDF22AE2AAD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE67402B-DF59-4AE3-814B-DDF22AE2AAD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE67402B-DF59-4AE3-814B-DDF22AE2AAD2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{02D0BF35-260C-4C23-81F4-C8AA1F81D430}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02D0BF35-260C-4C23-81F4-C8AA1F81D430}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02D0BF35-260C-4C23-81F4-C8AA1F81D430}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02D0BF35-260C-4C23-81F4-C8AA1F81D430}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1DC67458-E153-4283-A971-4B7E0369B65A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1DC67458-E153-4283-A971-4B7E0369B65A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1DC67458-E153-4283-A971-4B7E0369B65A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1DC67458-E153-4283-A971-4B7E0369B65A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F04B1029-9D84-4051-B431-C57FFEDCAE6F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F04B1029-9D84-4051-B431-C57FFEDCAE6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F04B1029-9D84-4051-B431-C57FFEDCAE6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F04B1029-9D84-4051-B431-C57FFEDCAE6F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E838AADC-3027-492D-9D79-50FE8D6A28C3}
+	EndGlobalSection
+EndGlobal

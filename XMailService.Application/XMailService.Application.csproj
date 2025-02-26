@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="MailSignatures\Commands\" />
+    <Folder Include="MailSignatures\Queries\" />
+    <Folder Include="MailTemplates\Commands\" />
+    <Folder Include="MailTemplates\Queries\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentValidation" />
+    <PackageReference Include="FluentValidation.AspNetCore" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\XMailService.Domain\XMailService.Domain.csproj" />
+    <ProjectReference Include="..\XMailService.Shared\XMailService.Shared.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,10 @@
+.vs
+obj/
+docker-compose.stag.yml
+*.stag.dockerfile
+stag.*.dockerfile
+nginx/*
+mymoney.client/obj/
+bin/
+.idea
+mymoney.client/obj/
