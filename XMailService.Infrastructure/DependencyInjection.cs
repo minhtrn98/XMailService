@@ -1,14 +1,29 @@
-﻿using Microsoft.AspNetCore.Connections;
-using XMailService.Infrastructure.Persistence;
-using Npgsql.EntityFrameworkCore.PostgreSQL;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Npgsql.EntityFrameworkCore.PostgreSQL;
+using XMailService.Application.Interfaces;
+using XMailService.Infrastructure.Persistence;
+using XMailService.Infrastructure.Repositories;
+using XMailService.Infrastructure.Services;
 
 namespace XMailService.Infrastructure;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddDatabase(configuration);
+
+        services.AddScoped<IMailTemplateRepository, MailTemplateRepository>();
+        services.AddScoped<IMailSignatureRepository, MailSignatureRepository>();
+        services.AddScoped<ICurrentUserProvider, CurrentUserProvider>();
+        services.AddScoped<IDateTimeProvider, SystemDateTimeProvider>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddPooledDbContextFactory<AppDbContext>((sp, options) => options
             .UseNpgsql(
