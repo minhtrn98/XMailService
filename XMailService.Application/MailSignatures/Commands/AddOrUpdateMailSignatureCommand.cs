@@ -1,5 +1,4 @@
-﻿using System.Text;
-using Amazon.S3;
+﻿using Amazon.S3;
 using Amazon.S3.Model;
 using FluentValidation;
 using MediatR;
@@ -26,59 +25,57 @@ public sealed record AddOrUpdateMailSignatureCommand : IRequest
         public async Task Handle(AddOrUpdateMailSignatureCommand request, CancellationToken cancellationToken)
         {
             int version = await unitOfWork.MailSignatures.GetCurrentVersion(request.Name, cancellationToken);
-            version++;
+            int nextVersion = version + 1;
 
-            string fileName = $"{request.Name}_V{version}.html";
-            string filePath = Path.Combine(Path.GetTempPath(), fileName);
-            MailSignature mailSignature = new()
-            {
-                Name = request.Name,
-                Description = request.Description,
-                Version = version
-            };
+            string fileName = $"{request.Name}_V{nextVersion}.html";
             bool isSaveDbSuccess = false;
+
+            MailSignature mailSignature = CreateMailSignature(request, nextVersion);
 
             try
             {
-                unitOfWork.MailSignatures.Add(mailSignature);
-                await unitOfWork.SaveChangesAsync();
-                isSaveDbSuccess = true;
-
-                using FileStream fs = new(filePath, FileMode.Create);
-                byte[] byteBody = Encoding.UTF8.GetBytes(request.Body);
-                await fs.WriteAsync(byteBody);
-
-                PutObjectRequest putRequest = new()
-                {
-                    BucketName = _bucketName,
-                    Key = "signatures",
-                    InputStream = fs,
-                    ContentType = "text/html",
-                    Metadata =
-                    {
-                        ["x-amz-meta-origionalname"] = fileName,
-                        ["x-amz-meta-extension"] = Path.GetExtension(fileName)
-                    }
-                };
-
-                await s3Client.PutObjectAsync(putRequest);
+                isSaveDbSuccess = await SaveMailSignatureToDatabase(mailSignature);
+                await UploadFileToS3(request.Body, fileName);
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Error while creating mail template");
+                logger.LogError(ex, "Error while creating mail signature");
                 if (isSaveDbSuccess)
                 {
-                    unitOfWork.MailSignatures.Delete(mailSignature);
-                    await unitOfWork.SaveChangesAsync();
+                    await RollbackDatabaseChanges(mailSignature);
                 }
             }
-            finally
+        }
+
+        private static MailSignature CreateMailSignature(AddOrUpdateMailSignatureCommand request, int version) => new()
+        {
+            Name = request.Name,
+            Description = request.Description,
+            Version = version
+        };
+
+        private async Task<bool> SaveMailSignatureToDatabase(MailSignature mailSignature)
+        {
+            unitOfWork.MailSignatures.Add(mailSignature);
+            return await unitOfWork.SaveChangesAsync() > 0;
+        }
+
+        private async Task UploadFileToS3(string body, string fileName)
+        {
+            PutObjectRequest putRequest = new()
             {
-                if (File.Exists(fileName))
-                {
-                    File.Delete(fileName);
-                }
-            }
+                BucketName = _bucketName,
+                Key = $"signatures/{fileName}",
+                ContentBody = body,
+            };
+
+            await s3Client.PutObjectAsync(putRequest);
+        }
+
+        private async Task RollbackDatabaseChanges(MailSignature mailSignature)
+        {
+            unitOfWork.MailSignatures.Delete(mailSignature);
+            await unitOfWork.SaveChangesAsync();
         }
     }
 

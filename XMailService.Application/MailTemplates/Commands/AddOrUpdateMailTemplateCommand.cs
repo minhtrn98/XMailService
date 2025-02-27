@@ -1,5 +1,4 @@
-﻿using System.Text;
-using Amazon.S3;
+﻿using Amazon.S3;
 using Amazon.S3.Model;
 using FluentValidation;
 using MediatR;
@@ -27,60 +26,58 @@ public sealed record AddOrUpdateMailTemplateCommand : IRequest
         public async Task Handle(AddOrUpdateMailTemplateCommand request, CancellationToken cancellationToken)
         {
             int version = await unitOfWork.MailTemplates.GetCurrentVersion(request.Name, cancellationToken);
-            version++;
+            int nextVersion = version + 1;
 
-            string fileName = $"{request.Name}_V{version}.html";
-            string filePath = Path.Combine(Path.GetTempPath(), fileName);
-            MailTemplate mailTemplate = new()
-            {
-                Name = request.Name,
-                Subject = request.Subject,
-                Description = request.Description,
-                Version = version
-            };
+            string fileName = $"{request.Name}_V{nextVersion}.txt";
             bool isSaveDbSuccess = false;
+
+            MailTemplate mailTemplate = CreateMailTemplate(request, nextVersion);
 
             try
             {
-                unitOfWork.MailTemplates.Add(mailTemplate);
-                await unitOfWork.SaveChangesAsync();
-                isSaveDbSuccess = true;
-
-                using FileStream fs = new(filePath, FileMode.Create);
-                byte[] byteBody = Encoding.UTF8.GetBytes(request.Body);
-                await fs.WriteAsync(byteBody);
-
-                PutObjectRequest putRequest = new()
-                {
-                    BucketName = _bucketName,
-                    Key = "templates",
-                    InputStream = fs,
-                    ContentType = "text/html",
-                    Metadata =
-                    {
-                        ["x-amz-meta-origionalname"] = fileName,
-                        ["x-amz-meta-extension"] = Path.GetExtension(fileName)
-                    }
-                };
-
-                await s3Client.PutObjectAsync(putRequest);
+                isSaveDbSuccess = await SaveMailTemplateToDatabase(mailTemplate);
+                await UploadFileToS3(request.Body, fileName);
             }
             catch (Exception ex)
             {
                 logger.LogError(ex, "Error while creating mail template");
                 if (isSaveDbSuccess)
                 {
-                    unitOfWork.MailTemplates.Delete(mailTemplate);
-                    await unitOfWork.SaveChangesAsync();
+                    await RollbackDatabaseChanges(mailTemplate);
                 }
             }
-            finally
+        }
+
+        private static MailTemplate CreateMailTemplate(AddOrUpdateMailTemplateCommand request, int version) => new()
+        {
+            Name = request.Name,
+            Subject = request.Subject,
+            Description = request.Description,
+            Version = version
+        };
+
+        private async Task<bool> SaveMailTemplateToDatabase(MailTemplate mailTemplate)
+        {
+            unitOfWork.MailTemplates.Add(mailTemplate);
+            return await unitOfWork.SaveChangesAsync() > 0;
+        }
+
+        private async Task UploadFileToS3(string body, string fileName)
+        {
+            PutObjectRequest putRequest = new()
             {
-                if (File.Exists(fileName))
-                {
-                    File.Delete(fileName);
-                }
-            }
+                BucketName = _bucketName,
+                Key = $"templates/{fileName}",
+                ContentBody = body,
+            };
+
+            await s3Client.PutObjectAsync(putRequest);
+        }
+
+        private async Task RollbackDatabaseChanges(MailTemplate mailSignature)
+        {
+            unitOfWork.MailTemplates.Delete(mailSignature);
+            await unitOfWork.SaveChangesAsync();
         }
     }
 
