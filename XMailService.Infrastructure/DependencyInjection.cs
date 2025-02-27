@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql.EntityFrameworkCore.PostgreSQL;
 using XMailService.Application.Interfaces;
+using XMailService.Application.Repositories;
 using XMailService.Infrastructure.Interceptors;
 using XMailService.Infrastructure.Persistence;
 using XMailService.Infrastructure.Repositories;

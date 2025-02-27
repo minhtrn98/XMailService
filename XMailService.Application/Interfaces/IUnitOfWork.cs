@@ -1,4 +1,6 @@
-﻿namespace XMailService.Application.Interfaces;
+﻿using XMailService.Application.Repositories;
+
+namespace XMailService.Application.Interfaces;
 
 public interface IUnitOfWork : IDisposable, IAsyncDisposable
 {

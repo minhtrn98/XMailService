@@ -1,4 +1,5 @@
 ﻿using XMailService.Application.Interfaces;
+using XMailService.Application.Repositories;
 using XMailService.Infrastructure.Interceptors;
 using XMailService.Infrastructure.Persistence;
 using XMailService.Infrastructure.Repositories;

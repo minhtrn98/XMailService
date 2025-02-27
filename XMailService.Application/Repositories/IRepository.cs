@@ -1,6 +1,6 @@
 ﻿using XMailService.Domain.Entities.Commons;
 
-namespace XMailService.Application.Interfaces;
+namespace XMailService.Application.Repositories;
 
 public interface IRepository<TEntity> where TEntity : IEntity
 {

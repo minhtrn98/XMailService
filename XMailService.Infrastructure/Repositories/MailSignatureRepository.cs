@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using XMailService.Application.Interfaces;
+using XMailService.Application.Repositories;
 using XMailService.Domain.Entities;
 using XMailService.Infrastructure.Persistence;
 
