@@ -1,6 +1,4 @@
-﻿using Amazon.S3;
-using Amazon.S3.Model;
-using FluentValidation;
+﻿using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using XMailService.Application.Interfaces;
@@ -16,12 +14,10 @@ public sealed record AddOrUpdateMailSignatureCommand : IRequest
 
     internal sealed class Handler(
         IUnitOfWork unitOfWork,
-        IAmazonS3 s3Client,
+        IStorageService storageService,
         ILogger<AddOrUpdateMailSignatureCommand> logger
         ) : IRequestHandler<AddOrUpdateMailSignatureCommand>
     {
-        private readonly string _bucketName = "xmailservicebucket";
-
         public async Task Handle(AddOrUpdateMailSignatureCommand request, CancellationToken cancellationToken)
         {
             int version = await unitOfWork.MailSignatures.GetCurrentVersion(request.Name, cancellationToken);
@@ -35,7 +31,7 @@ public sealed record AddOrUpdateMailSignatureCommand : IRequest
             try
             {
                 isSaveDbSuccess = await SaveMailSignatureToDatabase(mailSignature);
-                await UploadFileToS3(request.Body, fileName);
+                await storageService.UploadAsync($"signatures/{fileName}", request.Body);
             }
             catch (Exception ex)
             {
@@ -58,18 +54,6 @@ public sealed record AddOrUpdateMailSignatureCommand : IRequest
         {
             unitOfWork.MailSignatures.Add(mailSignature);
             return await unitOfWork.SaveChangesAsync() > 0;
-        }
-
-        private async Task UploadFileToS3(string body, string fileName)
-        {
-            PutObjectRequest putRequest = new()
-            {
-                BucketName = _bucketName,
-                Key = $"signatures/{fileName}",
-                ContentBody = body,
-            };
-
-            await s3Client.PutObjectAsync(putRequest);
         }
 
         private async Task RollbackDatabaseChanges(MailSignature mailSignature)

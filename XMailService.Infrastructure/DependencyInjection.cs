@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Amazon.S3;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql.EntityFrameworkCore.PostgreSQL;
@@ -22,8 +23,11 @@ public static class DependencyInjection
 
         services.AddScoped<ICurrentUserProvider, CurrentUserProvider>();
         services.AddScoped<IDateTimeProvider, SystemDateTimeProvider>();
+        services.AddScoped<IStorageService, StorageService>();
 
         services.AddScoped<IUnitOfWorkInterceptor, AuditableEntityInterceptor>();
+
+        services.AddSingleton<IAmazonS3, AmazonS3Client>();
 
         return services;
     }

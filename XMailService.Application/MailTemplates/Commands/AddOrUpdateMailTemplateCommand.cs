@@ -1,6 +1,4 @@
-﻿using Amazon.S3;
-using Amazon.S3.Model;
-using FluentValidation;
+﻿using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using XMailService.Application.Interfaces;
@@ -17,12 +15,10 @@ public sealed record AddOrUpdateMailTemplateCommand : IRequest
 
     internal sealed class Handler(
         IUnitOfWork unitOfWork,
-        IAmazonS3 s3Client,
+        IStorageService storageService,
         ILogger<AddOrUpdateMailTemplateCommand> logger
         ) : IRequestHandler<AddOrUpdateMailTemplateCommand>
     {
-        private readonly string _bucketName = "xmailservicebucket";
-
         public async Task Handle(AddOrUpdateMailTemplateCommand request, CancellationToken cancellationToken)
         {
             int version = await unitOfWork.MailTemplates.GetCurrentVersion(request.Name, cancellationToken);
@@ -36,7 +32,7 @@ public sealed record AddOrUpdateMailTemplateCommand : IRequest
             try
             {
                 isSaveDbSuccess = await SaveMailTemplateToDatabase(mailTemplate);
-                await UploadFileToS3(request.Body, fileName);
+                await storageService.UploadAsync($"signatures/{fileName}", request.Body);
             }
             catch (Exception ex)
             {
@@ -60,18 +56,6 @@ public sealed record AddOrUpdateMailTemplateCommand : IRequest
         {
             unitOfWork.MailTemplates.Add(mailTemplate);
             return await unitOfWork.SaveChangesAsync() > 0;
-        }
-
-        private async Task UploadFileToS3(string body, string fileName)
-        {
-            PutObjectRequest putRequest = new()
-            {
-                BucketName = _bucketName,
-                Key = $"templates/{fileName}",
-                ContentBody = body,
-            };
-
-            await s3Client.PutObjectAsync(putRequest);
         }
 
         private async Task RollbackDatabaseChanges(MailTemplate mailSignature)
