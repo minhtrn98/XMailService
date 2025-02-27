@@ -9,7 +9,6 @@ public sealed class MailSignatureConfiguration : IEntityTypeConfiguration<MailSi
     public void Configure(EntityTypeBuilder<MailSignature> builder)
     {
         builder.Property(w => w.Name).HasMaxLength(100);
-        builder.Property(w => w.FileLocation).HasMaxLength(500);
         builder.Property(w => w.Description).HasMaxLength(500);
 
         builder.Property<uint>("RowVersion").IsRowVersion();

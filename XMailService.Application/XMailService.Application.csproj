@@ -7,15 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="MailSignatures\Commands\" />
-    <Folder Include="MailSignatures\Queries\" />
-    <Folder Include="MailTemplates\Commands\" />
-    <Folder Include="MailTemplates\Queries\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="FluentValidation" />
     <PackageReference Include="FluentValidation.AspNetCore" />
+
+    <PackageReference Include="AWSSDK.S3" />
   </ItemGroup>
 
   <ItemGroup>

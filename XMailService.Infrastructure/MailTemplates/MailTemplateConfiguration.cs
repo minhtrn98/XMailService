@@ -10,7 +10,6 @@ public sealed class MailTemplateConfiguration : IEntityTypeConfiguration<MailTem
     {
         builder.Property(w => w.Name).HasMaxLength(100);
         builder.Property(w => w.Subject).HasMaxLength(500);
-        builder.Property(w => w.FileLocation).HasMaxLength(500);
         builder.Property(w => w.Description).HasMaxLength(500);
 
         builder.Property<uint>("RowVersion").IsRowVersion();
